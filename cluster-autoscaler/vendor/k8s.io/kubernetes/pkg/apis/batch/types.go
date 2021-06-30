@@ -178,18 +178,20 @@ type JobSpec struct {
 	//
 	// `Indexed` means that the Pods of a
 	// Job get an associated completion index from 0 to (.spec.completions - 1),
-	// available in the annotation batch.alpha.kubernetes.io/job-completion-index.
+	// available in the annotation batch.kubernetes.io/job-completion-index.
 	// The Job is considered complete when there is one successfully completed Pod
 	// for each index.
 	// When value is `Indexed`, .spec.completions must be specified and
 	// `.spec.parallelism` must be less than or equal to 10^5.
+	// In addition, The Pod name takes the form
+	// `$(job-name)-$(index)-$(random-string)`,
+	// the Pod hostname takes the form `$(job-name)-$(index)`.
 	//
-	// This field is alpha-level and is only honored by servers that enable the
-	// IndexedJob feature gate. More completion modes can be added in the future.
+	// This field is beta-level. More completion modes can be added in the future.
 	// If the Job controller observes a mode that it doesn't recognize, the
 	// controller skips updates for the Job.
 	// +optional
-	CompletionMode CompletionMode
+	CompletionMode *CompletionMode
 
 	// Suspend specifies whether the Job controller should create Pods or not. If
 	// a Job is created with suspend set to true, no Pods are created by the Job

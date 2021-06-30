@@ -36,10 +36,12 @@ const (
 	AwsProviderName = "aws"
 	// BaiducloudProviderName gets the provider name of baiducloud
 	BaiducloudProviderName = "baiducloud"
+	// BizflyCloudProviderName gets the provider name of bizflycloud
+	BizflyCloudProviderName = "bizflycloud"
 	// CloudStackProviderName gets the provider name of cloudstack
 	CloudStackProviderName = "cloudstack"
-	// ClusterAPIProiverName gets the provider name of clusterapi
-	ClusterAPIProiverName = "clusterapi"
+	// ClusterAPIProviderName gets the provider name of clusterapi
+	ClusterAPIProviderName = "clusterapi"
 	// DigitalOceanProviderName gets the provider name of digitalocean
 	DigitalOceanProviderName = "digitalocean"
 	// ExoscaleProviderName gets the provider name of exoscale
@@ -254,6 +256,16 @@ func (c InstanceErrorClass) String() string {
 	}
 }
 
+const (
+	// FakeNodeReasonAnnotation is an annotation added to the fake placeholder nodes CA has created
+	// Note that this don't map to real nodes in k8s and are merely used for error handling
+	FakeNodeReasonAnnotation = "k8s.io/cluster-autoscaler/fake-node-reason"
+	// FakeNodeUnregistered represents a node that is identified by CA as unregistered
+	FakeNodeUnregistered = "unregistered"
+	// FakeNodeCreateError represents a node that is identified by CA as a created node with errors
+	FakeNodeCreateError = "create-error"
+)
+
 // PricingModel contains information about the node price and how it changes in time.
 type PricingModel interface {
 	// NodePrice returns a price of running the given node for a given period of time.
@@ -273,17 +285,17 @@ const (
 	ResourceNameMemory = "memory"
 )
 
-// IsGpuResource checks if given resource name point denotes a gpu type
-func IsGpuResource(resourceName string) bool {
+// IsCustomResource checks if given resource name point denotes a gpu type
+func IsCustomResource(resourceName string) bool {
 	// hack: we assume anything which is not cpu/memory to be a gpu.
 	// we are not getting anything more that a map string->limits from the user
 	return resourceName != ResourceNameCores && resourceName != ResourceNameMemory
 }
 
-// ContainsGpuResources returns true iff given list contains any resource name denoting a gpu type
-func ContainsGpuResources(resources []string) bool {
+// ContainsCustomResources returns true iff given list contains any custom resource name
+func ContainsCustomResources(resources []string) bool {
 	for _, resource := range resources {
-		if IsGpuResource(resource) {
+		if IsCustomResource(resource) {
 			return true
 		}
 	}

@@ -220,7 +220,7 @@ func (mig *gceMig) IncreaseSize(delta int) error {
 	if int(size)+delta > mig.MaxSize() {
 		return fmt.Errorf("size increase too large - desired:%d max:%d", int(size)+delta, mig.MaxSize())
 	}
-	return mig.gceManager.SetMigSize(mig, size+int64(delta))
+	return mig.gceManager.CreateInstances(mig, int64(delta))
 }
 
 // DecreaseTargetSize decreases the target size of the node group. This function
@@ -356,7 +356,7 @@ func BuildGCE(opts config.AutoscalingOptions, do cloudprovider.NodeGroupDiscover
 		defer config.Close()
 	}
 
-	manager, err := CreateGceManager(config, do, opts.Regional, opts.ConcurrentGceRefreshes)
+	manager, err := CreateGceManager(config, do, opts.Regional, opts.ConcurrentGceRefreshes, opts.UserAgent)
 	if err != nil {
 		klog.Fatalf("Failed to create GCE Manager: %v", err)
 	}
